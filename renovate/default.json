@@ -1,10 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Org policy (docs: security.md). Minor and patch updates merge themselves once the checks pass; majors wait for a person; vulnerability fixes merge themselves at any time, majors included (deploys are smoke-tested and reverted when they fail).",
+  "description": "Org policy (cglc-main/docs security.md). Minor and patch updates merge themselves once the checks pass; majors wait for a person; vulnerability fixes merge themselves at any time, majors included (deploys are smoke-tested and reverted when they fail). Commit types: fix for runtime dependencies and base images (an app release, so the fix reaches production), chore for the rest.",
   "extends": [
     "config:recommended",
     ":semanticCommits",
-    ":semanticCommitTypeAll(fix)",
+    ":semanticPrefixFixDepsChoreOthers",
     "helpers:pinGitHubActionDigests",
     "docker:pinDigests",
     ":dependencyDashboard"
@@ -45,6 +45,13 @@
       "labels": [
         "major"
       ]
+    },
+    {
+      "description": "Base images ship in our images: a fix release, so they reach production.",
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "semanticCommitType": "fix"
     }
   ],
   "vulnerabilityAlerts": {
