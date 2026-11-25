@@ -38,5 +38,8 @@ jobs:
           RENOVATE_AUTODISCOVER_FILTER: ${{ github.repository_owner }}/*
           RENOVATE_REPOSITORIES: ${{ inputs.repository }}
           RENOVATE_ONBOARDING: "false"
+          # Commits through the API: signed by GitHub and authored by the app.
+          RENOVATE_PLATFORM_COMMIT: enabled
+          RENOVATE_GIT_AUTHOR: cglc-auto-bot[bot] <361313835+cglc-auto-bot[bot]@users.noreply.github.com>
           RENOVATE_REQUIRE_CONFIG: optional
           LOG_LEVEL: info
