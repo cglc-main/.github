@@ -1,0 +1,42 @@
+# Renovate for every repository of the organization, as the GitHub App cglc-auto-bot. Runs every 30 minutes, and at once
+# when an app has published a release (its release workflow dispatches this one), so a new version reaches infra
+# within minutes. Policy: renovate/default.json.
+name: renovate
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: Only this repository (e.g. cglc-main/infra); empty for all
+        required: false
+        default: ""
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  renovate:
+    runs-on: ubuntu-24.04
+    steps:
+      - id: token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: renovatebot/github-action@v46
+        with:
+          token: ${{ steps.token.outputs.token }}
+        env:
+          RENOVATE_AUTODISCOVER: ${{ inputs.repository == '' && 'true' || 'false' }}
+          RENOVATE_AUTODISCOVER_FILTER: ${{ github.repository_owner }}/*
+          RENOVATE_REPOSITORIES: ${{ inputs.repository }}
+          RENOVATE_ONBOARDING: "false"
+          RENOVATE_REQUIRE_CONFIG: optional
+          LOG_LEVEL: info

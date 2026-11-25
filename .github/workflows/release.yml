@@ -1,0 +1,53 @@
+# Reusable: cut a release from the commits on main since the last one (Conventional Commits, semantic-release):
+# a tag vX.Y.Z and a GitHub Release with the changelog. Nothing is committed back. Callers build their images for the
+# version in the outputs (docs: delivery.md).
+name: release
+
+on:
+  workflow_call:
+    inputs:
+      sha:
+        description: The commit to release (main's head when the tests passed)
+        type: string
+        required: true
+    outputs:
+      released:
+        value: ${{ jobs.release.outputs.released }}
+      version:
+        value: ${{ jobs.release.outputs.version }}
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    outputs:
+      released: ${{ steps.semrel.outputs.new_release_published }}
+      version: ${{ steps.semrel.outputs.new_release_version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.sha }}
+          fetch-depth: 0
+      - name: Configuration
+        run: |
+          cat > .releaserc.json <<'JSON'
+          {
+            "branches": ["main"],
+            "tagFormat": "v${version}",
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator",
+              ["@semantic-release/github", { "successComment": false, "failComment": false, "releasedLabels": false }]
+            ]
+          }
+          JSON
+      - id: semrel
+        uses: cycjimmy/semantic-release-action@v8
+        with:
+          semantic_version: 26
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

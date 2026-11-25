@@ -1,0 +1,74 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Org policy (docs: security.md). Minor and patch updates merge themselves once the checks pass; majors wait for a person; vulnerability fixes merge themselves at any time, majors included (deploys are smoke-tested and reverted when they fail).",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(fix)",
+    "helpers:pinGitHubActionDigests",
+    "docker:pinDigests",
+    ":dependencyDashboard"
+  ],
+  "timezone": "Europe/Berlin",
+  "osvVulnerabilityAlerts": true,
+  "platformAutomerge": true,
+  "automergeType": "pr",
+  "flux": {
+    "managerFilePatterns": [
+      "/(^|/)clusters/.+\\.ya?ml$/"
+    ]
+  },
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/(^|/)(clusters|deploy)/.+\\.ya?ml$/",
+      "/(^|/)kustomization\\.ya?ml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Non-major updates merge themselves after the required checks.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest",
+        "pinDigest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Majors wait for a person.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false,
+      "labels": [
+        "major"
+      ]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "labels": [
+      "security"
+    ],
+    "schedule": [
+      "at any time"
+    ]
+  },
+  "customManagers": [
+    {
+      "description": "Versions marked with a `# renovate:` comment on the line above (pins.env, YAML, HCL, shell).",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)[^/]+\\.(env|ya?ml|tf|sh)$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>[a-z-]+)\\s+depName=(?<depName>\\S+)(\\s+versioning=(?<versioning>\\S+))?\\s*\\n[^\\n]*?[=:]\\s*\"?v?(?<currentValue>[0-9][^\"\\s,}]*)\"?",
+        "#\\s*renovate:\\s*datasource=(?<datasource>[a-z-]+)\\s+depName=(?<depName>\\S+)\\s*\\n\\s*-\\s*\\{[^}]*newTag:\\s*(?<currentValue>[^\\s,}]+)"
+      ],
+      "extractVersionTemplate": "^v?(?<version>.*)$"
+    }
+  ]
+}
