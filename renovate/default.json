@@ -10,6 +10,7 @@
     ":dependencyDashboard"
   ],
   "timezone": "Europe/Berlin",
+  "prHourlyLimit": 0,
   "osvVulnerabilityAlerts": true,
   "platformAutomerge": true,
   "automergeType": "pr",
