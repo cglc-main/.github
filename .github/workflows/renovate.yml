@@ -1,17 +1,23 @@
 # Renovate for every repository of the organization, as the GitHub App cglc-auto-bot. Runs every 30 minutes, and at once
 # when an app has published a release (its release workflow dispatches this one), so a new version reaches infra
-# within minutes. Policy: renovate/default.json.
+# within minutes. Off the hour and half hour: GitHub drops scheduled runs at those busy minutes. Policy:
+# renovate/default.json.
 name: renovate
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "17,47 * * * *"
   workflow_dispatch:
     inputs:
       repository:
         description: Only this repository (e.g. cglc-main/infra); empty for all
         required: false
         default: ""
+      log_level:
+        description: Renovate log level (debug to see why a branch fails)
+        type: choice
+        options: [info, debug]
+        default: info
 
 concurrency:
   group: renovate
@@ -42,4 +48,4 @@ jobs:
           RENOVATE_PLATFORM_COMMIT: enabled
           RENOVATE_GIT_AUTHOR: cglc-auto-bot[bot] <361313835+cglc-auto-bot[bot]@users.noreply.github.com>
           RENOVATE_REQUIRE_CONFIG: optional
-          LOG_LEVEL: info
+          LOG_LEVEL: ${{ inputs.log_level || 'info' }}
