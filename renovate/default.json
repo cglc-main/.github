@@ -48,6 +48,13 @@
       ]
     },
     {
+      "description": "A `# renovate:` comment marks a version, not a digest: the regex manager has nowhere to write one, and a digest pin there fails the whole branch (update failure).",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "pinDigests": false
+    },
+    {
       "description": "Base images ship in our images: a fix release, so they reach production.",
       "matchManagers": [
         "dockerfile"
