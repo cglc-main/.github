@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Org policy (cglc-main/docs security.md). Minor and patch updates merge themselves once the checks pass; majors wait for a person; vulnerability fixes merge themselves at any time, majors included (deploys are smoke-tested and reverted when they fail). Commit types: fix for runtime dependencies and base images (an app release, so the fix reaches production), chore for the rest.",
+  "description": "Org policy (cglc-main/docs security.md). Minor and patch updates merge themselves once the checks pass; majors wait for a person; vulnerability fixes merge themselves at any time, majors included (deploys are smoke-tested and reverted when they fail). Commit types: fix for runtime dependencies and base images (an app release, so the fix reaches production), chore for the rest. Lockfiles are written with npm below 12: npm 12 refuses some registry tarballs (EALLOWREMOTE, Tailwind's wasm package), and the apps build with the npm of their Node image.",
   "extends": [
     "config:recommended",
     ":semanticCommits",
@@ -11,6 +11,9 @@
   ],
   "timezone": "Europe/Berlin",
   "prHourlyLimit": 0,
+  "constraints": {
+    "npm": "<12"
+  },
   "osvVulnerabilityAlerts": true,
   "platformAutomerge": true,
   "automergeType": "pr",
