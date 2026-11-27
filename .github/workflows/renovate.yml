@@ -1,12 +1,12 @@
-# Renovate for every repository of the organization, as the GitHub App cglc-auto-bot. Runs every 30 minutes, and at once
-# when an app has published a release (its release workflow dispatches this one), so a new version reaches infra
-# within minutes. Off the hour and half hour: GitHub drops scheduled runs at those busy minutes. Policy:
-# renovate/default.json.
+# Renovate for every repository of the organization, as the GitHub App cglc-auto-bot. Runs every 30 minutes, dispatched
+# from the cluster (infra: clusters/prod/flux-system/renovate.yaml), because GitHub drops most scheduled runs of this
+# workflow; the schedule below is only a fallback. Also runs at once when an app has published a release (its release
+# workflow dispatches this one), so a new version reaches infra within minutes. Policy: renovate/default.json.
 name: renovate
 
 on:
   schedule:
-    - cron: "17,47 * * * *"
+    - cron: "32 */3 * * *"
   workflow_dispatch:
     inputs:
       repository:
